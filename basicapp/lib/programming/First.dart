@@ -28,4 +28,14 @@ void main() {
   if (kDebugMode) {
     print(seeAge);
   }
+
+  // Var vs Dayanmic
+  
+  var first='Sanjit';
+   final  second='kumar';
+   first='Sanjit Kumar';
+  // second='Sanjit';
+   print(first);
+   print(second);
+
 }
