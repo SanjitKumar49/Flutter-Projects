@@ -1,0 +1,82 @@
+tep — moving from GetX to BLoC with Clean Architecture is the way many companies structure enterprise-level Flutter apps. Let me design a company-level project structure for you using the jsonplaceholder APIs you mentioned (posts, comments, albums, photos, todos, users) with Bloc + Clean Architecture.
+
+🔥 Why BLoC + Clean Architecture?
+
+Separation of Concerns – UI, Business Logic, and Data are separated → easy to maintain & scale.
+
+Testability – You can test use cases & blocs without depending on UI.
+
+Scalability – Adding more APIs or features won’t mess existing code.
+
+Industry standard – Big companies & teams follow this architecture.
+
+🏗️ Project Structure (Enterprise Level)
+lib/
+ └── src/
+      ├── config/                # App-wide configs (theme, routes, constants)
+      │    ├── app_router.dart
+      │    ├── app_theme.dart
+      │    └── constants.dart
+      │
+      ├── core/                  # Core utilities reusable across app
+      │    ├── error/
+      │    │     ├── exceptions.dart
+      │    │     └── failures.dart
+      │    ├── network/
+      │    │     ├── api_client.dart   # Dio/http client setup
+      │    │     └── network_info.dart # Check internet connection
+      │    └── usecase/usecase.dart    # Base class for use cases
+      │
+      ├── features/               # Each API/feature as module
+      │    ├── posts/
+      │    │     ├── data/
+      │    │     │     ├── models/post_model.dart
+      │    │     │     ├── datasources/post_remote_data_source.dart
+      │    │     │     └── repositories/post_repository_impl.dart
+      │    │     ├── domain/
+      │    │     │     ├── entities/post.dart
+      │    │     │     ├── repositories/post_repository.dart
+      │    │     │     └── usecases/get_posts.dart
+      │    │     ├── presentation/
+      │    │     │     ├── bloc/post_bloc.dart
+      │    │     │     └── pages/posts_page.dart
+      │    │     └── posts_injection.dart   # DI for this feature
+      │    │
+      │    ├── albums/ … same structure
+      │    ├── photos/ … same structure
+      │    ├── todos/ … same structure
+      │    ├── users/ … same structure
+      │    └── comments/ … same structure
+      │
+      └── main.dart               # Entry point
+
+⚙️ Explanation of Layers
+1. Data Layer
+
+Model → Representation of API JSON (with fromJson/toJson).
+
+Remote Data Source → Handles actual API calls (Dio or http).
+
+Repository Impl → Implements the abstract repository (Domain layer) and decides from where to fetch (remote/local).
+
+✅ Why? → Keeps API logic separate, easy to replace APIs.
+
+2. Domain Layer
+
+Entities → Pure business objects (only required fields, no JSON stuff).
+
+Repository (Abstract) → Contract between Domain and Data.
+
+UseCases → Specific business logic (e.g., GetPosts, GetAlbums).
+
+✅ Why? → Business logic stays clean, testable, independent of UI & APIs.
+
+3. Presentation Layer
+
+Bloc → Handles events & states, communicates with UseCases.
+
+UI (Pages/Widgets) → Only listens to Bloc state & renders UI.
+
+DI (Dependency Injection) → Each feature has its own DI setup.
+
+✅ Why? → UI is dumb, business logic handled in Bloc.
