@@ -60,6 +60,7 @@ class MyCameraController extends GetxController {
     return file;
   }
 
+/*
   Future<void> sendImageToVision(File imageFile) async {
     final bytes = await imageFile.readAsBytes();
     final base64Image = base64Encode(bytes);
@@ -96,6 +97,29 @@ class MyCameraController extends GetxController {
       print('Error: ${response.body}');
     }
   }
+*/
+  Future<void> sendImageToVision(File imageFile) async {
+    final url = 'http://10.43.223.212:8000/detect-labels/';
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      var respStr = await response.stream.bytesToString();
+      final result = jsonDecode(respStr);
+      final labels = result['labels'] as List<dynamic>;
+
+      detectedObjects.clear();
+      for (var label in labels) {
+        detectedObjects.add(label['description']);
+      }
+    } else {
+      print('Error: ${response.statusCode}');
+    }
+  }
+
 
   @override
   void onClose() {
